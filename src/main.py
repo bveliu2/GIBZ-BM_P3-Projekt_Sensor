@@ -6,11 +6,9 @@ import uvicorn
 import threading
 import mqtt_utils as mqtt_utils # Importiert mqtt_utils.py
 import api_utils as api_utils # Importiert api_utils.py
-import gui_utils as gui_utils # Importiert gui_utils.py
 
 from sql_utils import create_tables 
 from fastapi import FastAPI
-from PyQt6.QtWidgets import QApplication
 
 app = FastAPI()
 
@@ -51,23 +49,6 @@ def run_server():
         reload=False
     )
 
-# Startet das GUI
-def start_gui():
-    gui = QApplication(sys.argv)
-    dashboard = gui_utils.Dashboard()
-    dashboard.show()
-    sys.exit(gui.exec())
-
 # Startpunkt des Programms
 if __name__ == "__main__":
-    # Thread für das GUI
-    gui_thread = threading.Thread(target=start_gui)
-    gui_thread.start()
-
-    # Thread für die API
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
-
-    # Optional: Warten, bis beide Threads beendet sind
-    gui_thread.join()
-    server_thread.join()
+    run_server()
