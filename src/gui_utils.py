@@ -1,7 +1,7 @@
 import sys
 import sqlite3
 from PyQt6.QtWidgets import (
-   QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QComboBox, QDateEdit
+   QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QComboBox, QDateEdit
 )
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt, QTimer, QDate
@@ -205,9 +205,3 @@ class Dashboard(QWidget):
            conn.close()
        except Exception as e:
            print(f"Fehler beim Laden der Daten: {e}")
-
-def start_gui():
-    app = QApplication(sys.argv)
-    dashboard = Dashboard()
-    dashboard.show()
-    sys.exit(app.exec())
