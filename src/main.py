@@ -2,29 +2,45 @@ import random
 import os
 import asyncio
 import uvicorn
-import mqtt_utils as mqtt_utils
-import api_utils as api_utils
+import threading
+import mqtt_utils as mqtt_utils # Importiert mqtt_utils.py
+import api_utils as api_utils # Importiert api_utils.py
+import gui_utils as gui_utils # Importiert gui_utils.py
 
-from sql_utils import create_tables
+from sql_utils import create_tables 
 from fastapi import FastAPI
 
 app = FastAPI()
 
+# Erstellt die Datenbanktabellen, falls sie nicht existieren
 create_tables()
 
+# Verbindet den MQTT-Client und abonniert relevante Topics
 mqtt_client_instance = mqtt_utils.connect_mqtt()
 mqtt_utils.subscribe(mqtt_client_instance)
 
+# Startet den MQTT-Loop beim Starten der FastAPI-Anwendung
 @app.on_event("startup")
 def startup_event():
     mqtt_utils.loop_mqtt()
     print("MQTT client started")
 
-# FastAPI route
+# Root-Endpoint für die API
 @app.get("/")
 async def read_root():
+    return {"message": "This is the root endpoint of the sensor API."}
+
+# Gibt den Status des letzten Geräts zurück
+@app.get("/api/status")
+async def read_state():
     return api_utils.get_latest_device()
-            
+
+# Gibt neuste Sensordaten für ein bestimmtes Gerät zurück
+@app.get("/api/status/{sensor}")
+async def read_sensor(sensor):
+    return api_utils.get_latest_data_by_device_id(sensor)
+
+# Startet Uvicorn-Server für die FastAPI-Anwendung
 def run_server():
     uvicorn.run(
         "main:app",
@@ -33,5 +49,16 @@ def run_server():
         reload=True
     )
 
+# Startpunkt des Programms
 if __name__ == "__main__":
-    run_server()
+    # Thread für die GUI
+    gui_thread = threading.Thread(target=gui_utils.start_gui)
+    gui_thread.start()
+
+    # Thread für den FastAPI/Uvicorn-Server
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
+
+    # Optional: Warten, bis beide Threads beendet sind
+    gui_thread.join()
+    server_thread.join()
