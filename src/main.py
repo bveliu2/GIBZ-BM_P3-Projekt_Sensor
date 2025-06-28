@@ -46,7 +46,7 @@ def run_server():
         "main:app",
         host="0.0.0.0",
         port=80,
-        reload=True
+        reload=False
     )
 
 # Startpunkt des Programms
