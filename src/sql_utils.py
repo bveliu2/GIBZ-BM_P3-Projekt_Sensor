@@ -4,6 +4,7 @@ def create_tables():
     # Sqlite3 connection
     con = sqlite3.connect('sensordata.db')
     cur = con.cursor()
+    # Erstellt Tabelle für Devices
     cur.execute("""
         CREATE TABLE IF NOT EXISTS devices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -15,14 +16,7 @@ def create_tables():
         );
     """)
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS gateways (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            gateway_id TEXT UNIQUE,
-            eui TEXT
-        );
-    """)
-
+    # Erstellt Tabelle für Payloads
     cur.execute("""
         CREATE TABLE IF NOT EXISTS payloads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
