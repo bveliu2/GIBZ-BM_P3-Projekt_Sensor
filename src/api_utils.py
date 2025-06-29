@@ -1,12 +1,13 @@
 import sqlite3
 
+# Funktion zum Abrufen des neuesten Eintrags aus der Datenbank – unabhängig vom Gerät
 def get_latest_device():
     # Verbindung zur SQLite-Datenbank herstellen
     con = sqlite3.connect('sensordata.db')
-    con.row_factory = sqlite3.Row  # Ermöglicht Zugriff per Spaltennamen
+    con.row_factory = sqlite3.Row
     cur = con.cursor()
 
-    # Abfrage neuester Datensatz
+    # SQL-Abfrage: Holt die zuletzt empfangenen Sensordaten zusammen mit Geräteinformationen
     cur.execute("""
         SELECT
             d.device_id,
@@ -29,7 +30,7 @@ def get_latest_device():
     row = cur.fetchone()
     con.close()
 
-    # Wenn ein Eintrag vorhanden ist, zurückgeben
+    # Verpacke die Informationen in ein Dictionary
     if row:
         result = {
             "device_id": row["device_id"],
@@ -45,11 +46,14 @@ def get_latest_device():
     else:
         return {"message": "No data found"}
 
+# Funktion zum Abrufen des neuesten Eintrags für ein bestimmtes Gerät (per ID)
 def get_latest_data_by_device_id(device_id: str):
+    # Verbindung zur SQLite-Datenbank
     con = sqlite3.connect('sensordata.db')
     con.row_factory = sqlite3.Row
     cur = con.cursor()
 
+    # SQL-Abfrage: Holt die neuesten Sensordaten für das angegebene Gerät
     cur.execute("""
         SELECT
             d.device_id,
@@ -74,6 +78,7 @@ def get_latest_data_by_device_id(device_id: str):
     row = cur.fetchone()
     con.close()
 
+    # Verpacke die Informationen in ein Dictionary
     if row:
         result = {
             "device_id": row["device_id"],
